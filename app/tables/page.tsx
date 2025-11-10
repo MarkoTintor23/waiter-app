@@ -3,11 +3,15 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
+type Table = {
+  id: number;
+  status: "prazno" | "otvoreno" | "placeno";
+};
+
 export default function TablesPage() {
   const router = useRouter();
 
-  // inicijalno kreiramo 12 stolova
-  const [tables, setTables] = useState(
+  const [tables, setTables] = useState<Table[]>(
     Array.from({ length: 12 }, (_, i) => ({
       id: i + 1,
       status: "prazno",
@@ -19,7 +23,7 @@ export default function TablesPage() {
     if (saved) setTables(JSON.parse(saved));
   }, []);
 
-  const handleTableClick = (table) => {
+  const handleTableClick = (table: Table) => {
     const newTables = [...tables];
     if (table.status === "prazno") {
       newTables[table.id - 1].status = "otvoreno";
@@ -34,7 +38,7 @@ export default function TablesPage() {
     router.push(`/order/${table.id}`);
   };
 
-  const getColor = (status) => {
+  const getColor = (status: Table["status"]) => {
     switch (status) {
       case "prazno":
         return "bg-gray-400";

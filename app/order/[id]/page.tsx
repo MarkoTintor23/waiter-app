@@ -3,15 +3,32 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 
+type MenuItem = {
+  name: string;
+  price: number;
+};
+
+type OrderItem = {
+  name: string;
+  price: number;
+  quantity: number;
+  note: string;
+};
+
+type Table = {
+  id: number;
+  status: string;
+};
+
 export default function OrderPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
 
-  const [waiter, setWaiter] = useState("");
-  const [order, setOrder] = useState([]);
-  const [tables, setTables] = useState([]);
+  const [waiter, setWaiter] = useState<string>("");
+  const [order, setOrder] = useState<OrderItem[]>([]);
+  const [tables, setTables] = useState<Table[]>([]);
 
-  const menu = {
+  const menu: Record<string, MenuItem[]> = {
     pice: [
       { name: "Kafa", price: 180 },
       { name: "Sok", price: 200 },
@@ -40,9 +57,9 @@ export default function OrderPage() {
     if (savedOrder) setOrder(JSON.parse(savedOrder));
   }, [id]);
 
-  const addItem = (item) => {
+  const addItem = (item: MenuItem) => {
     const existing = order.find((i) => i.name === item.name);
-    let newOrder;
+    let newOrder: OrderItem[];
 
     if (existing) {
       newOrder = order.map((i) =>
@@ -56,7 +73,7 @@ export default function OrderPage() {
     localStorage.setItem(`order_${id}`, JSON.stringify(newOrder));
   };
 
-  const updateQuantity = (name, delta) => {
+  const updateQuantity = (name: string, delta: number) => {
     const newOrder = order
       .map((i) =>
         i.name === name
@@ -69,7 +86,7 @@ export default function OrderPage() {
     localStorage.setItem(`order_${id}`, JSON.stringify(newOrder));
   };
 
-  const updateNote = (name, note) => {
+  const updateNote = (name: string, note: string) => {
     const newOrder = order.map((i) => (i.name === name ? { ...i, note } : i));
     setOrder(newOrder);
     localStorage.setItem(`order_${id}`, JSON.stringify(newOrder));
@@ -113,7 +130,6 @@ export default function OrderPage() {
         Sto {id} — Konobar: {waiter}
       </h1>
 
-      {}
       <div className="grid grid-cols-3 gap-6">
         {Object.entries(menu).map(([category, items]) => (
           <div key={category}>
@@ -133,7 +149,6 @@ export default function OrderPage() {
         ))}
       </div>
 
-      {}
       <h2 className="text-lg font-semibold mt-8 mb-2">Porudžbina</h2>
       {order.length === 0 ? (
         <p>Nema stavki.</p>
@@ -172,7 +187,6 @@ export default function OrderPage() {
         </div>
       )}
 
-      {}
       <div className="mt-6">
         <p className="text-lg font-bold">Ukupno: {total} RSD</p>
 
